@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
-import { Button, Divider, HeaderText, Input, FlexContainer } from '@mapfre/reactjs-ui-components'
+import { Button, Divider, FlexContainer, HeaderText, Input } from '@mapfre/reactjs-ui-components'
 import { useFormik } from 'formik'
 import logo from 'src/assets/logo.svg'
 import Link from 'src/components/Link'
@@ -11,7 +11,7 @@ import Authorized from 'src/modais/AuthorizedModal'
 import api from 'src/services/api'
 import { putData, redirectTo } from 'src/utils'
 
-import { LoginBackground, LoginContainer, Logo, LoginForm } from './styles'
+import { LoginBackground, LoginContainer, LoginForm, Logo } from './styles'
 
 const Login = () => {
     const formik = useFormik({
@@ -33,7 +33,7 @@ const Login = () => {
         },
     })
 
-    const [searchParams] = useSearchParams({})
+    const [searchParams] = useSearchParams()
     const documentNumberRef = useRef(null)
 
     useEffect(() => {
@@ -52,12 +52,14 @@ const Login = () => {
     const handleAccept = async (e: any) => {
         const consentId = searchParams.get('consent_id')
         const request = searchParams.get('request')
-        const redirectUri = decodeURIComponent(searchParams.get('redirect_uri'))
+
         const refused = e?.target?.innerHTML.includes('Recusar')
         if (refused) {
             setStatus(false)
             setShowAuthorizedModal(true)
             try {
+                const { data }: any = await api.put(`${consentId}?cache_id=${request}`, putData)
+                const redirectUri = data.data.cache.redirectUri
                 await api.delete(`${consentId}`)
                 redirectTo(redirectUri)
             } catch (error) {
@@ -69,11 +71,11 @@ const Login = () => {
         setShowAuthorizedModal(true)
         try {
             const { data }: any = await api.put(`${consentId}?cache_id=${request}`, putData)
+            const redirectUri = data.data.cache.redirectUri
             const code = data.data.cache.code
             const state = data.data.cache.state
             const idToken = data.data.cache.idToken
-            const redirect = `${redirectUri}#code=${code}&state=${state}&id_token=${idToken}`
-            redirectTo(redirect)
+            redirectTo(`${redirectUri}#code=${code}&state=${state}&id_token=${idToken}`)
         } catch (error) {
             console.log('catch do PUT: ' + error?.message)
         }

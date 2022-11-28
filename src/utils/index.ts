@@ -1,9 +1,5 @@
-const REDIRECT_TIME_IN_SECONDS = 3 * 1000
-
 const redirectTo = (uri: string) => {
-    setTimeout(() => {
-        window.location.replace(uri)
-    }, REDIRECT_TIME_IN_SECONDS)
+    window.location.replace(uri)
 }
 
 const putData = {

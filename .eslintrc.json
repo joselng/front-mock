@@ -4,7 +4,11 @@
         "es2021": true,
         "jest/globals": true
     },
-    "extends": ["plugin:react/recommended", "standard", "plugin:prettier/recommended"],
+    "extends": [
+        "plugin:react/recommended",
+        "standard",
+        "plugin:prettier/recommended"
+    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
@@ -26,7 +30,16 @@
             "warn",
             {
                 "newlinesBetween": "always",
-                "groups": ["/^react/", "module", "/^~/", ["parent", "sibling", "index"]],
+                "groups": [
+                    "/^react/",
+                    "module",
+                    "/^~/",
+                    [
+                        "parent",
+                        "sibling",
+                        "index"
+                    ]
+                ],
                 "alphabetize": {
                     "order": "asc",
                     "ignoreCase": true
@@ -34,6 +47,7 @@
             }
         ],
         "space-before-function-paren": "off",
+        "react/react-in-jsx-scope": "off",
         "max-len": [
             "error",
             {
@@ -42,7 +56,9 @@
         ],
         "import/no-unresolved": "error",
         "no-shadow": "off",
-        "@typescript-eslint/no-shadow": ["error"],
+        "@typescript-eslint/no-shadow": [
+            "error"
+        ],
         "no-console": "off"
     },
     "settings": {
@@ -55,7 +71,10 @@
     },
     "overrides": [
         {
-            "files": ["*.ts", "*.tsx"],
+            "files": [
+                "*.ts",
+                "*.tsx"
+            ],
             "rules": {
                 "no-undef": "off"
             }
