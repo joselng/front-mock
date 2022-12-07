@@ -8,10 +8,20 @@ import Link from 'src/components/Link'
 import { loginSchema } from 'src/helpers/validation-schemas'
 import AuthorizeDataModal from 'src/modais/AuthorizeDataModal'
 import Authorized from 'src/modais/AuthorizedModal'
-import api from 'src/services/api'
-import { putData, redirectTo } from 'src/utils'
+import { apiBFF } from 'src/services/api'
+import { bffData, redirectTo } from 'src/utils'
 
 import { LoginBackground, LoginContainer, LoginForm, Logo } from './styles'
+
+interface BFFResponse {
+    redirectUri: string
+    consentId: string
+    idToken: string
+    created: string
+    state: string
+    code: string
+    id: string
+}
 
 const Login = () => {
     const formik = useFormik({
@@ -57,11 +67,23 @@ const Login = () => {
         if (refused) {
             setStatus(false)
             setShowAuthorizedModal(true)
+
+            bffData.status = 'REJECTED'
             try {
-                const { data }: any = await api.put(`${consentId}?cache_id=${request}`, putData)
-                const redirectUri = data.data.cache.redirectUri
-                await api.delete(`${consentId}`)
-                redirectTo(redirectUri)
+                const { data } = await apiBFF.put<BFFResponse>(`${consentId}`, bffData, {
+                    params: {
+                        cache_id: request,
+                    },
+                })
+
+                const code = data.code
+                const state = data.state
+                const idToken = data.idToken
+                const redirectUri = data.redirectUri
+
+                // await api.delete(`${consentId}`)
+
+                redirectTo(`${redirectUri}#code=${code}&state=${state}&id_token=${idToken}`)
             } catch (error) {
                 console.log('catch do DELETE: ' + error?.message)
             }
@@ -70,11 +92,13 @@ const Login = () => {
         setStatus(true)
         setShowAuthorizedModal(true)
         try {
-            const { data }: any = await api.put(`${consentId}?cache_id=${request}`, putData)
-            const redirectUri = data.data.cache.redirectUri
-            const code = data.data.cache.code
-            const state = data.data.cache.state
-            const idToken = data.data.cache.idToken
+            const { data } = await apiBFF.put<BFFResponse>(`${consentId}?cache_id=${request}`, bffData)
+
+            const redirectUri = data.redirectUri
+            const code = data.code
+            const state = data.state
+            const idToken = data.idToken
+
             redirectTo(`${redirectUri}#code=${code}&state=${state}&id_token=${idToken}`)
         } catch (error) {
             console.log('catch do PUT: ' + error?.message)
