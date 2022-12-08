@@ -14,9 +14,9 @@ import { bffData, redirectTo } from 'src/utils'
 import { LoginBackground, LoginContainer, LoginForm, Logo } from './styles'
 
 interface BFFResponse {
-    redirectUri: string
-    consentId: string
-    idToken: string
+    redirect_uri: string
+    consent_id: string
+    id_token: string
     created: string
     state: string
     code: string
@@ -76,14 +76,14 @@ const Login = () => {
                     },
                 })
 
-                const code = data.code
-                const state = data.state
-                const idToken = data.idToken
-                const redirectUri = data.redirectUri
+                const redirectUri = data.redirect_uri
+                const { consent_id: _, id, created, ...rest } = data
+
+                const params = new URLSearchParams(rest).toString()
 
                 // await api.delete(`${consentId}`)
 
-                redirectTo(`${redirectUri}#code=${code}&state=${state}&id_token=${idToken}`)
+                redirectTo(`${redirectUri}#${params}`)
             } catch (error) {
                 console.log('catch do DELETE: ' + error?.message)
             }
@@ -94,12 +94,12 @@ const Login = () => {
         try {
             const { data } = await apiBFF.put<BFFResponse>(`${consentId}?cache_id=${request}`, bffData)
 
-            const redirectUri = data.redirectUri
-            const code = data.code
-            const state = data.state
-            const idToken = data.idToken
+            const redirectUri = data.redirect_uri
+            const { consent_id: _, id, created, ...rest } = data
 
-            redirectTo(`${redirectUri}#code=${code}&state=${state}&id_token=${idToken}`)
+            const params = new URLSearchParams(rest).toString()
+
+            redirectTo(`${redirectUri}#${params}`)
         } catch (error) {
             console.log('catch do PUT: ' + error?.message)
         }
