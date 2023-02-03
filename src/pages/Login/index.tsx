@@ -76,8 +76,7 @@ const Login = () => {
                     },
                 })
 
-                const redirectUri = data.redirect_uri
-                const { consent_id: _, id, created, ...rest } = data
+                const { consent_id: _, id, created, redirect_uri: redirectUri, ...rest } = data
 
                 const params = new URLSearchParams(rest).toString()
 
@@ -94,8 +93,7 @@ const Login = () => {
         try {
             const { data } = await apiBFF.put<BFFResponse>(`${consentId}?cache_id=${request}`, bffData)
 
-            const redirectUri = data.redirect_uri
-            const { consent_id: _, id, created, ...rest } = data
+            const { consent_id: _, id, created, redirect_uri: redirectUri, ...rest } = data
 
             const params = new URLSearchParams(rest).toString()
 
